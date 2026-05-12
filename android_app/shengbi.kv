@@ -1,0 +1,312 @@
+#:kivy 2.0
+#:import dp kivy.metrics.dp
+
+<HomeScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(20)
+        spacing: dp(10)
+        
+        # 标题
+        Label:
+            text: '声笔词库工具'
+            font_size: dp(28)
+            size_hint_y: None
+            height: dp(50)
+            bold: True
+        
+        # 状态信息
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: dp(120)
+            spacing: dp(5)
+            
+            Label:
+                id: dict_path_label
+                text: '词库路径: 未设置'
+                font_size: dp(14)
+                size_hint_y: None
+                height: dp(30)
+                halign: 'left'
+                text_size: self.size
+            
+            Label:
+                id: rime_dir_label
+                text: 'Rime目录: 未设置'
+                font_size: dp(14)
+                size_hint_y: None
+                height: dp(30)
+                halign: 'left'
+                text_size: self.size
+            
+            Label:
+                id: contact_count_label
+                text: '已读取: 0 个联系人'
+                font_size: dp(14)
+                size_hint_y: None
+                height: dp(30)
+                halign: 'left'
+                text_size: self.size
+        
+        # 进度条
+        ProgressBar:
+            id: progress_bar
+            value: root.progress_value
+            size_hint_y: None
+            height: dp(20)
+        
+        # 状态文本
+        Label:
+            text: root.status_text
+            font_size: dp(16)
+            size_hint_y: None
+            height: dp(40)
+        
+        # 操作按钮
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: dp(200)
+            spacing: dp(10)
+            
+            Button:
+                id: read_btn
+                text: '读取通讯录'
+                font_size: dp(18)
+                on_press: root.read_contacts()
+                disabled: root.is_processing
+            
+            Button:
+                id: process_btn
+                text: '生成词库'
+                font_size: dp(18)
+                on_press: root.process_dict()
+                disabled: True
+            
+            Button:
+                id: preview_btn
+                text: '预览词条'
+                font_size: dp(18)
+                on_press: root.go_preview()
+                disabled: True
+        
+        # 底部导航
+        BoxLayout:
+            size_hint_y: None
+            height: dp(50)
+            spacing: dp(5)
+            
+            Button:
+                text: '主页'
+                on_press: root.manager.current = 'home'
+            
+            Button:
+                text: '设置'
+                on_press: root.manager.current = 'settings'
+            
+            Button:
+                text: '历史'
+                on_press: root.manager.current = 'history'
+
+
+<SettingsScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(20)
+        spacing: dp(15)
+        
+        Label:
+            text: '设置'
+            font_size: dp(24)
+            size_hint_y: None
+            height: dp(50)
+            bold: True
+        
+        # 词库路径
+        BoxLayout:
+            size_hint_y: None
+            height: dp(60)
+            orientation: 'vertical'
+            
+            Label:
+                text: '词库文件路径'
+                font_size: dp(14)
+                size_hint_y: None
+                height: dp(20)
+                halign: 'left'
+                text_size: self.size
+            
+            TextInput:
+                id: dict_path_input
+                multiline: False
+                font_size: dp(14)
+        
+        # Rime目录
+        BoxLayout:
+            size_hint_y: None
+            height: dp(60)
+            orientation: 'vertical'
+            
+            Label:
+                text: 'Rime配置目录'
+                font_size: dp(14)
+                size_hint_y: None
+                height: dp(20)
+                halign: 'left'
+                text_size: self.size
+            
+            TextInput:
+                id: rime_dir_input
+                multiline: False
+                font_size: dp(14)
+        
+        # VCF路径
+        BoxLayout:
+            size_hint_y: None
+            height: dp(60)
+            orientation: 'vertical'
+            
+            Label:
+                text: 'VCF文件路径（可选）'
+                font_size: dp(14)
+                size_hint_y: None
+                height: dp(20)
+                halign: 'left'
+                text_size: self.size
+            
+            TextInput:
+                id: vcf_path_input
+                multiline: False
+                font_size: dp(14)
+                hint_text: '留空则自动读取通讯录数据库'
+        
+        # 通讯录来源
+        BoxLayout:
+            size_hint_y: None
+            height: dp(60)
+            orientation: 'vertical'
+            
+            Label:
+                text: '通讯录来源'
+                font_size: dp(14)
+                size_hint_y: None
+                height: dp(20)
+                halign: 'left'
+                text_size: self.size
+            
+            Spinner:
+                id: source_spinner
+                text: '自动（优先数据库）'
+                values: ['自动（优先数据库）', '通讯录数据库', 'VCF文件']
+                font_size: dp(14)
+        
+        # 保存按钮
+        Button:
+            text: '保存设置'
+            font_size: dp(18)
+            size_hint_y: None
+            height: dp(50)
+            on_press: root.save_settings()
+        
+        # 返回按钮
+        Button:
+            text: '返回'
+            font_size: dp(18)
+            size_hint_y: None
+            height: dp(50)
+            on_press: root.manager.current = 'home'
+
+
+<PreviewScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(20)
+        spacing: dp(10)
+        
+        Label:
+            text: '新增词条预览'
+            font_size: dp(20)
+            size_hint_y: None
+            height: dp(40)
+        
+        # 表头
+        BoxLayout:
+            size_hint_y: None
+            height: dp(40)
+            
+            Label:
+                text: '姓名'
+                font_size: dp(16)
+                bold: True
+            
+            Label:
+                text: '编码'
+                font_size: dp(16)
+                bold: True
+        
+        # 词条列表
+        ScrollView:
+            do_scroll_x: False
+            
+            BoxLayout:
+                id: entries_container
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(5)
+        
+        # 返回按钮
+        Button:
+            text: '返回'
+            font_size: dp(18)
+            size_hint_y: None
+            height: dp(50)
+            on_press: root.manager.current = 'home'
+
+
+<HistoryScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(20)
+        spacing: dp(10)
+        
+        Label:
+            text: '更新历史'
+            font_size: dp(20)
+            size_hint_y: None
+            height: dp(40)
+        
+        # 表头
+        BoxLayout:
+            size_hint_y: None
+            height: dp(40)
+            
+            Label:
+                text: '时间'
+                font_size: dp(16)
+                bold: True
+            
+            Label:
+                text: '结果'
+                font_size: dp(16)
+                bold: True
+        
+        # 历史列表
+        ScrollView:
+            do_scroll_x: False
+            
+            BoxLayout:
+                id: history_container
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(5)
+        
+        # 返回按钮
+        Button:
+            text: '返回'
+            font_size: dp(18)
+            size_hint_y: None
+            height: dp(50)
+            on_press: root.manager.current = 'home'

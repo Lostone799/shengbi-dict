@@ -1,0 +1,76 @@
+name: vcf-to-shengbi
+display_name: VCF通讯录转声笔词库
+description: 将通讯录转换为Rime输入法声笔方案词库，支持自动获取通讯录、自动备份、一键部署
+version: 1.2.0
+author: SOLO
+type: tool
+
+entry_point:
+  command: python3
+  script: convert.py
+
+parameters:
+  auto:
+    type: boolean
+    description: 自动获取通讯录（优先数据库，其次扫描VCF文件）
+    required: false
+    default: true
+
+  vcf_file:
+    type: file
+    description: VCF通讯录文件路径（可选，--auto时可省略）
+    required: false
+
+  dict_file:
+    type: file
+    description: 现有词库文件路径（用于合并）
+    required: false
+
+  output_file:
+    type: string
+    description: 输出词库文件路径
+    required: false
+
+  copy_target:
+    type: string
+    description: 复制到目标目录（默认 /storage/emulated/0/rime/）
+    required: false
+    default: /storage/emulated/0/rime/
+
+  new_name:
+    type: string
+    description: 复制时重命名文件（默认 sbzdy.txt）
+    required: false
+    default: sbzdy.txt
+
+  no_backup:
+    type: boolean
+    description: 禁用自动备份
+    required: false
+    default: false
+
+  no_copy:
+    type: boolean
+    description: 不复制到目标目录（仅生成文件）
+    required: false
+    default: false
+
+dependencies:
+  - pypinyin
+
+usage_examples:
+  - description: 一键自动模式（推荐）
+    command: python3 convert.py --auto -d /storage/emulated/0/rime/sbzdy.txt
+
+  - description: 指定VCF文件
+    command: python3 convert.py contacts.vcf -d sbzdy.txt
+
+  - description: 仅生成不复制
+    command: python3 convert.py --auto --no-copy
+
+  - description: 禁用备份
+    command: python3 convert.py --auto --no-backup
+
+output:
+  type: file
+  description: 生成的声笔词库文件
