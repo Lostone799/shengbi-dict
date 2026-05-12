@@ -20,6 +20,16 @@ jobs:
       with:
         python-version: '3.10'
         
+    - name: Cache Buildozer
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.buildozer
+          android_app/.buildozer
+        key: buildozer-cache-v1-${{ hashFiles('android_app/buildozer.spec') }}
+        restore-keys: |
+          buildozer-cache-v1-
+
     - name: Install system dependencies
       run: |
         sudo apt-get update
